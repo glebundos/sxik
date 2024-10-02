@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     };
 
     notes.push(newNote);
-    fs.writeFileSync(notesFilePath, JSON.stringify(notes));
+    // fs.writeFileSync(notesFilePath, JSON.stringify(notes));
 
     // Возвращаем добавленную заметку вместе с сообщением
     return NextResponse.json(
