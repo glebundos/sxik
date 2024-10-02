@@ -70,6 +70,7 @@ export default function NotesForm() {
         setName("");
         setMessage("");
         setImage(null); // Сбрасываем изображение
+        setImagePreview(null);
       } else {
         console.error("Failed to save note");
       }

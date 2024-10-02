@@ -22,8 +22,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: repeating-linear-gradient(
+    to bottom,
+    #0d1d31 0px,
+    #0c0d13 50vh,
+    #0d1d31 100vh
+  );
   min-height: 100vh;
-  background: radial-gradient(ellipse at bottom, #0d1d31 0%, #0c0d13 100%);
 }
 
 * {
@@ -68,9 +73,9 @@ button {
   cursor: pointer;
   font-family: var(--font-sans);
   transition: background-color 0.3s ease;
-  background-color: #000;
+  background-color: rgb(0, 0, 0, 0.6);
 }
 
 button:hover {
-  background-color: #222222;
+  background-color: rgb(0, 0, 0, 0.85);
 }
