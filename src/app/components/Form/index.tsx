@@ -2,12 +2,21 @@
 
 import { useState, useEffect } from "react";
 import s from "./styles.module.scss";
+import Image from "next/image";
 
 export default function NotesForm() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [notes, setNotes] = useState<
-    { id: string; name: string; message: string; date: number }[] // Измените тип на number
+    {
+      id: string;
+      name: string;
+      message: string;
+      date: number;
+      imageUrl: string;
+    }[]
   >([]);
 
   useEffect(() => {
@@ -27,18 +36,32 @@ export default function NotesForm() {
     fetchNotes();
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImage(file);
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const newNote = { name, message };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("message", message);
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
       const res = await fetch("/api/notes", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newNote),
+        body: formData, // Используем FormData для отправки
       });
 
       if (res.ok) {
@@ -46,6 +69,7 @@ export default function NotesForm() {
         setNotes((prevNotes) => [...prevNotes, note]);
         setName("");
         setMessage("");
+        setImage(null); // Сбрасываем изображение
       } else {
         console.error("Failed to save note");
       }
@@ -70,6 +94,26 @@ export default function NotesForm() {
           placeholder="Введите сообщение"
           required
         ></textarea>
+        {/* <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files?.[0] || null)}
+        /> */}
+        <label htmlFor="file-upload" className={s.custom_file_upload}>
+          <Image src="/add_photo.svg" alt="add-photo" width={40} height={40} />
+          {imagePreview && (
+            <div className={s.preview}>
+              <Image src={imagePreview} alt="Preview" fill={true} />
+            </div>
+          )}
+        </label>
+        <input
+          id="file-upload"
+          className={s.image_input}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
         <button type="submit">Сохранить</button>
       </form>
 
@@ -77,11 +121,12 @@ export default function NotesForm() {
         <h2>Сохраненные заметки</h2>
         {notes
           .slice()
-          .reverse() // Переворачиваем массив, чтобы новые заметки отображались вверху
+          .reverse()
           .map((note) => (
             <div key={note.id} className={s.note}>
               <strong>{note.name}:</strong>
               <p>{note.message}</p>
+              {note.imageUrl && <img src={note.imageUrl} alt="Uploaded" />}{" "}
               <small>{new Date(note.date).toLocaleString()}</small>{" "}
             </div>
           ))}
