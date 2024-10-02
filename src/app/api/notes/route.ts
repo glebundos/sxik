@@ -1,16 +1,27 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const notesFilePath = path.join(process.cwd(), "data", "notes.json");
+import { db } from "../../../../firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  Timestamp,
+  orderBy,
+  query,
+} from "firebase/firestore";
 
 export async function GET() {
   try {
-    const data = fs.readFileSync(notesFilePath, "utf8");
-    const notes = JSON.parse(data);
+    const notesCollection = collection(db, "notes");
+    const notesQuery = query(notesCollection, orderBy("date", "asc"));
+    const notesSnapshot = await getDocs(notesQuery);
+    const notes = notesSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      date: doc.data().date.toMillis(), // Преобразуем Timestamp в миллисекунды
+    }));
     return NextResponse.json(notes);
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching notes:", error);
     return NextResponse.error();
   }
 }
@@ -19,26 +30,17 @@ export async function POST(request: Request) {
   const { name, message } = await request.json();
 
   try {
-    const data = fs.readFileSync(notesFilePath, "utf8");
-    const notes = JSON.parse(data);
+    const notesCollection = collection(db, "notes");
+    const newNote = { name, message, date: Timestamp.now() }; // Используем Timestamp
+    const docRef = await addDoc(notesCollection, newNote);
 
-    // Создаем новую заметку с текущей датой и временем
-    const newNote = {
-      name,
-      message,
-      date: new Date().toISOString(), // или new Date().toString() для читаемого формата
-    };
-
-    notes.push(newNote);
-    // fs.writeFileSync(notesFilePath, JSON.stringify(notes));
-
-    // Возвращаем добавленную заметку вместе с сообщением
+    // Возвращаем новую заметку с датой в миллисекундах
     return NextResponse.json(
-      { message: "Note saved!", note: newNote },
+      { id: docRef.id, ...newNote, date: newNote.date.toMillis() },
       { status: 201 }
     );
   } catch (error) {
-    console.log(error);
+    console.error("Error saving note:", error);
     return NextResponse.error();
   }
 }

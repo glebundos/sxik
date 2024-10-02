@@ -73,5 +73,9 @@
     max-width: 500px;
     overflow-wrap: break-word;
     word-wrap: break-word;
+
+    strong {
+      font-family: var(--font-geist-hero_b);
+    }
   }
 }

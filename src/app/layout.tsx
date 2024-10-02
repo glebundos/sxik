@@ -20,6 +20,12 @@ const ru_Hero = localFont({
   weight: "100 900",
 });
 
+const ru_Hero_b = localFont({
+  src: "./fonts/ofont.ru_Hero_b.ttf",
+  variable: "--font-geist-hero_b",
+  weight: "100 900",
+});
+
 export const metadata: Metadata = {
   title: "My Notes App",
   description: "Application for storing notes with dark purple background",
@@ -33,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${ru_Hero.variable}`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ru_Hero.variable} ${ru_Hero_b.variable}`}
       >
         {children}
       </body>

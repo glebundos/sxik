@@ -7,15 +7,24 @@ export default function NotesForm() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [notes, setNotes] = useState<
-    { name: string; message: string; date: string }[]
+    { id: string; name: string; message: string; date: number }[] // Измените тип на number
   >([]);
 
   useEffect(() => {
-    // Получение сохраненных заметок при загрузке компонента
-    fetch("/api/notes")
-      .then((res) => res.json())
-      .then((data) => setNotes(data))
-      .catch((error) => console.error("Error fetching notes:", error));
+    const fetchNotes = async () => {
+      try {
+        const res = await fetch("/api/notes");
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await res.json();
+        setNotes(data);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+      }
+    };
+
+    fetchNotes();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,7 +33,6 @@ export default function NotesForm() {
     const newNote = { name, message };
 
     try {
-      // Отправляем POST запрос на API для сохранения заметки
       const res = await fetch("/api/notes", {
         method: "POST",
         headers: {
@@ -34,9 +42,8 @@ export default function NotesForm() {
       });
 
       if (res.ok) {
-        const { note } = await res.json(); // Получаем добавленную заметку из ответа
-        // Обновляем состояние и очищаем поля формы
-        setNotes((prevNotes) => [...prevNotes, note]); // Добавляем новую заметку в начало массива
+        const note = await res.json();
+        setNotes((prevNotes) => [...prevNotes, note]);
         setName("");
         setMessage("");
       } else {
@@ -69,14 +76,15 @@ export default function NotesForm() {
       <div className={s.notes}>
         <h2>Сохраненные заметки</h2>
         {notes
-          .map((note, index) => (
-            <div key={index} className={s.note}>
+          .slice()
+          .reverse() // Переворачиваем массив, чтобы новые заметки отображались вверху
+          .map((note) => (
+            <div key={note.id} className={s.note}>
               <strong>{note.name}:</strong>
               <p>{note.message}</p>
               <small>{new Date(note.date).toLocaleString()}</small>{" "}
             </div>
-          ))
-          .reverse()}{" "}
+          ))}
       </div>
     </div>
   );
