@@ -118,7 +118,7 @@ export default function NotesForm() {
       </form>
 
       <div className={s.notes}>
-        <h2>Сохраненные заметки</h2>
+        <h2>Сохранёнки</h2>
         {notes
           .slice()
           .reverse()
