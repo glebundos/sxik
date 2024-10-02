@@ -46,6 +46,11 @@
     align-items: center;
     margin-bottom: 20px;
 
+    img {
+      filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%)
+        hue-rotate(11deg) brightness(101%) contrast(102%);
+    }
+
     .preview {
       width: 90%;
       margin-bottom: 20px;
@@ -53,6 +58,7 @@
 
       img {
         position: relative !important;
+        filter: none;
       }
     }
   }
