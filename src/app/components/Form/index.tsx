@@ -18,6 +18,7 @@ export default function NotesForm() {
       imageUrl: string;
     }[]
   >([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -50,7 +51,7 @@ export default function NotesForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("name", name);
     formData.append("message", message);
@@ -61,7 +62,7 @@ export default function NotesForm() {
     try {
       const res = await fetch("/api/notes", {
         method: "POST",
-        body: formData, // Используем FormData для отправки
+        body: formData,
       });
 
       if (res.ok) {
@@ -69,69 +70,76 @@ export default function NotesForm() {
         setNotes((prevNotes) => [...prevNotes, note]);
         setName("");
         setMessage("");
-        setImage(null); // Сбрасываем изображение
+        setImage(null);
         setImagePreview(null);
       } else {
         console.error("Failed to save note");
       }
     } catch (error) {
       console.error("Error submitting note:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className={s.content}>
-      <form onSubmit={handleSubmit} className={s.form}>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Введите ваше имя"
-          required
-        />
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Введите сообщение"
-          required
-        ></textarea>
-        {/* <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files?.[0] || null)}
-        /> */}
-        <label htmlFor="file-upload" className={s.custom_file_upload}>
-          <Image src="/add_photo.svg" alt="add-photo" width={40} height={40} />
-          {imagePreview && (
-            <div className={s.preview}>
-              <Image src={imagePreview} alt="Preview" fill={true} />
-            </div>
-          )}
-        </label>
-        <input
-          id="file-upload"
-          className={s.image_input}
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-        />
-        <button type="submit">Сохранить</button>
-      </form>
+    <>
+      {isLoading ? <div className={s.lds_dual_ring}></div> : <></>}
+      <div className={`${s.content} ${isLoading ? s.blur : ""}`}>
+        <form onSubmit={handleSubmit} className={s.form}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Введите ваше имя"
+            required
+          />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Введите сообщение"
+            required
+          ></textarea>
+          <label htmlFor="file-upload" className={s.custom_file_upload}>
+            <Image
+              src="/add_photo.svg"
+              alt="add-photo"
+              width={40}
+              height={40}
+            />
+            {imagePreview && (
+              <div className={s.preview}>
+                <Image src={imagePreview} alt="Preview" fill={true} />
+              </div>
+            )}
+          </label>
+          <input
+            id="file-upload"
+            className={s.image_input}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          <button type="submit">Сохранить</button>
+        </form>
 
-      <div className={s.notes}>
-        <h2>Сохранёнки</h2>
-        {notes
-          .slice()
-          .reverse()
-          .map((note) => (
-            <div key={note.id} className={s.note}>
-              <strong>{note.name}:</strong>
-              <p>{note.message}</p>
-              {note.imageUrl && <img src={note.imageUrl} alt="Uploaded" />}{" "}
-              <small>{new Date(note.date).toLocaleString()}</small>{" "}
-            </div>
-          ))}
+        <div className={s.notes}>
+          <h2>Сохранёнки</h2>
+          {notes
+            .slice()
+            .reverse()
+            .map((note) => (
+              <div key={note.id} className={s.note}>
+                <strong>{note.name}:</strong>
+                <p>{note.message}</p>
+                {note.imageUrl && (
+                  <img src={note.imageUrl} alt="Uploaded" />
+                )}{" "}
+                <small>{new Date(note.date).toLocaleString()}</small>{" "}
+              </div>
+            ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -3,6 +3,11 @@
   flex-direction: column;
   align-items: center;
   height: 70vh;
+  transition: filter 0.5s ease;
+}
+
+.content.blur {
+  filter: blur(10px);
 }
 
 .form {
@@ -10,6 +15,7 @@
   background-color: transparent;
   display: flex;
   flex-direction: column;
+  align-items: center;
 
   width: 310px;
   * {
@@ -24,6 +30,7 @@
     border: none;
     padding-left: 2px;
     transition: background-color 0.25s ease;
+    width: 100%;
   }
 
   .image_input {
@@ -73,6 +80,7 @@
   button {
     border-radius: 2px;
     font-size: 18px;
+    width: 100%;
   }
 
   button:focus {
@@ -112,5 +120,39 @@
     img {
       padding: 10px;
     }
+  }
+}
+
+.lds_dual_ring,
+.lds_dual_ring:after {
+  box-sizing: border-box;
+}
+.lds_dual_ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  z-index: 90999;
+}
+.lds_dual_ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6.4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: lds_dual_ring 1.2s linear infinite;
+}
+@keyframes lds_dual_ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
