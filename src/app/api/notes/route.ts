@@ -10,6 +10,7 @@ export async function GET() {
     const notes = JSON.parse(data);
     return NextResponse.json(notes);
   } catch (error) {
+    console.log(error);
     return NextResponse.error();
   }
 }
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.error();
   }
 }

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import s from "./page.module.scss";
 import Stars from "./components/Stars";
 import Header from "./components/Header";
