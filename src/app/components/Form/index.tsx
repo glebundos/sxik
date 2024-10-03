@@ -51,9 +51,6 @@ export default function NotesForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("next public", process.env.NEXT_PUBLIC_PASSWORD);
-    console.log("no next public", process.env.PASSWORD);
-    console.log("pass", password);
     if (password !== process.env.NEXT_PUBLIC_PASSWORD) {
       setPassword("");
       return;
