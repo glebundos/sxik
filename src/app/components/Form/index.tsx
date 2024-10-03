@@ -6,6 +6,7 @@ import Image from "next/image";
 
 export default function NotesForm() {
   const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -50,6 +51,11 @@ export default function NotesForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (password !== process.env.NEXT_PUBLIC_PASSWORD) {
+      setPassword("");
+      return;
+    }
+
     e.preventDefault();
     setIsLoading(true);
     const formData = new FormData();
@@ -92,6 +98,13 @@ export default function NotesForm() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Введите ваше имя"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Введите пароль"
             required
           />
           <textarea
